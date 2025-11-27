@@ -5,9 +5,42 @@ function App() {
   const [query, setQuery] = useState("");
   const [searchString, setSearchString] = useState("");
 
-  const handleChange = (event) => {
-    setQuery(event.target.value);
-    console.log("검색 쿼리:", event.target.value);
+  // 타이머를 상태로 관리
+  const [debTimer, setDebTimer] = useState(null);
+  const [thrTimer, setThrTimer] = useState(null);
+
+  // Debounce
+  const handleDebounce = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    // 기존 타이머 제거
+    if (debTimer) clearTimeout(debTimer);
+
+    // 새 타이머 생성
+    const newTimer = setTimeout(() => {
+      setSearchString(`Debounce 검색: ${value}`);
+      console.log("Debounce 실행:", value);
+    }, 500);
+
+    setDebTimer(newTimer);
+  };
+
+  // Throttle
+  const handleThrottle = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    // 타이머가 돌고 있으면 무시
+    if (thrTimer) return;
+
+    const newTimer = setTimeout(() => {
+      setSearchString(`Throttle 검색: ${value}`);
+      console.log("Throttle 실행:", value);
+      setThrTimer(null); // 다시 실행 가능하도록
+    }, 500);
+
+    setThrTimer(newTimer);
   };
 
   return (
@@ -22,7 +55,7 @@ function App() {
         <input
           type="text"
           placeholder="Debounce를 이용한 검색..."
-          onChange={handleChange}
+          onChange={handleDebounce}
         />
       </div>
       <div>
@@ -30,7 +63,7 @@ function App() {
         <input
           type="text"
           placeholder="Throttle을 이용한 검색..."
-          onChange={handleChange}
+          onChange={handleThrottle}
         />
       </div>
       <p>{searchString}</p>
